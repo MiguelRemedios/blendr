@@ -13,19 +13,23 @@ import { Input } from "@/components/ui/input";
 import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaCircleNodes } from "react-icons/fa6";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useCreateUserAccount,
   useSignInAccount,
 } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 const SignUpForm = () => {
   const { toast } = useToast();
-  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } =
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
+
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
-  const { mutateAsync: signInAccount, isLoading: isSigningIn } =
+  const { mutateAsync: signInAccount, isPending: isSigningIn } =
     useSignInAccount();
 
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -53,6 +57,15 @@ const SignUpForm = () => {
     });
 
     if (!session) {
+      return toast({ title: "Sign Up failed! Please try again..." });
+    }
+
+    const isLoggedIn = await checkAuthUser();
+
+    if (isLoggedIn) {
+      form.reset();
+      navigate("/");
+    } else {
       return toast({ title: "Sign Up failed! Please try again..." });
     }
   }
