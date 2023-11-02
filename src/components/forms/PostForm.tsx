@@ -16,17 +16,24 @@ import { Textarea } from "../ui/textarea";
 import FileUploader from "../shared/FileUploader";
 import { PostValidation } from "@/lib/validation";
 import { Models } from "appwrite";
-import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
+import {
+  useCreatePost,
+  useUpdatePost,
+} from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 import { useToast } from "../ui/use-toast";
+import Loader from "../shared/Loader";
 
 type PostFormProps = {
   post?: Models.Document;
+  action: "Create" | "Update";
 };
 
-const PostForm = ({ post }: PostFormProps) => {
+const PostForm = ({ post, action }: PostFormProps) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+    useUpdatePost();
   const { toast } = useToast();
   const { user } = useUserContext();
   const navigate = useNavigate();
@@ -42,6 +49,25 @@ const PostForm = ({ post }: PostFormProps) => {
   });
 
   async function onSubmit(values: z.infer<typeof PostValidation>) {
+    if (post && action === "Update") {
+      const updatedPost = await updatePost({
+        ...values,
+        postId: post.$id,
+        imageId: post?.imageId,
+        imageUrl: post?.imageUrl,
+      });
+
+      if (!updatedPost) {
+        return toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Failed to update  post! Please try again later...",
+        });
+      }
+
+      return navigate(`/posts/${post.$id}`);
+    }
+
     const newPost = await createPost({ ...values, userId: user.id });
 
     if (!newPost) {
@@ -140,8 +166,10 @@ const PostForm = ({ post }: PostFormProps) => {
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap h-12"
+            disabled={isLoadingCreate || isLoadingUpdate}
           >
-            Publish
+            {isLoadingCreate || (isLoadingUpdate && <Loader />)}
+            {action}
           </Button>
         </div>
       </form>
