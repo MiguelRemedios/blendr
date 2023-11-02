@@ -45,7 +45,11 @@ const PostForm = ({ post }: PostFormProps) => {
     const newPost = await createPost({ ...values, userId: user.id });
 
     if (!newPost) {
-      toast({ title: "Failed new post! Please try again later..." });
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Failed new post! Please try again later...",
+      });
     }
 
     navigate("/");
@@ -123,7 +127,14 @@ const PostForm = ({ post }: PostFormProps) => {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-          <Button type="button" className="shad-button_dark_4">
+          <Button
+            type="button"
+            className="shad-button_dark_4"
+            onClick={() => {
+              form.reset();
+              navigate("/");
+            }}
+          >
             Cancel
           </Button>
           <Button
