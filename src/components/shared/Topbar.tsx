@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { FaCircleNodes } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";

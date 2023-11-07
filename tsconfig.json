@@ -27,5 +27,6 @@
     }
   },
   "include": ["src"],
+  "exclude": ["src/lib/react-query/queriesAndMutations.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -18,7 +18,6 @@ import { FaCircleNodes } from "react-icons/fa6";
 import { useToast } from "@/components/ui/use-toast";
 import { useSignInAccount } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
-import { log } from "console";
 
 const SignInForm = () => {
   const { toast } = useToast();
