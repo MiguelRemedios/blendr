@@ -1,11 +1,8 @@
 {
-    "github": {
-        "silent": true
-    },
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/"
-        }
-    ]
+  "version": 2,
+  "builds": [{ "src": "vite.config.js", "use": "@vercel/static-builder" }],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "vite.config.js" }
+  ]
 }
